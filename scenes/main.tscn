@@ -1,0 +1,102 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/vehicle_ctrl.gd" id="1_ctrl"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
+sky_top_color = Color(0.15, 0.45, 0.88, 1)
+sky_horizon_color = Color(0.65, 0.82, 0.96, 1)
+ground_bottom_color = Color(0.16, 0.32, 0.14, 1)
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("SkyMat_1")
+
+[sub_resource type="Environment" id="Env_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+fog_enabled = true
+fog_light_color = Color(0.75, 0.85, 0.95, 1)
+fog_density = 0.004
+
+[sub_resource type="BoxShape3D" id="BoxShape_road"]
+size = Vector3(240, 1, 240)
+
+[sub_resource type="BoxMesh" id="BoxMesh_road"]
+size = Vector3(14, 0.2, 240)
+
+[sub_resource type="BoxShape3D" id="BoxShape_veh"]
+size = Vector3(2.2, 1.8, 4.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_driver"]
+size = Vector3(0.45, 0.65, 0.45)
+
+[ext_resource type="Script" path="res://scripts/city_traffic.gd" id="2_city"]
+
+[node name="MainWorld3D" type="Node3D"]
+
+[node name="CityAndTraffic3D" type="Node3D" parent="."]
+script = ExtResource("2_city")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_1")
+
+[node name="SunLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.35, 0.35, 0, 0.707, 0.707, -0.5, -0.61, 0.61, 0, 35, 0)
+shadow_enabled = true
+light_energy = 1.35
+
+[node name="Ground3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape_road")
+
+[node name="RoadMesh3D" type="MeshInstance3D" parent="Ground3D"]
+mesh = SubResource("BoxMesh_road")
+
+[node name="PlayerVehicle3D" type="VehicleBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+mass = 1500.0
+script = ExtResource("1_ctrl")
+
+[node name="ChassisCollision" type="CollisionShape3D" parent="PlayerVehicle3D"]
+shape = SubResource("BoxShape_veh")
+
+[node name="ChassisMesh" type="MeshInstance3D" parent="PlayerVehicle3D"]
+mesh = SubResource("BoxMesh_veh")
+
+[node name="Driver3D_CHR-01" type="MeshInstance3D" parent="PlayerVehicle3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45, 0.9, 0.8)
+mesh = SubResource("BoxMesh_driver")
+
+[node name="FLWheel" type="VehicleWheel3D" parent="PlayerVehicle3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0, -0.4, 1.5)
+use_as_steering = true
+wheel_radius = 0.45
+
+[node name="FRWheel" type="VehicleWheel3D" parent="PlayerVehicle3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, -0.4, 1.5)
+use_as_steering = true
+wheel_radius = 0.45
+
+[node name="RLWheel" type="VehicleWheel3D" parent="PlayerVehicle3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0, -0.4, -1.5)
+use_as_traction = true
+wheel_radius = 0.45
+
+[node name="RRWheel" type="VehicleWheel3D" parent="PlayerVehicle3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, -0.4, -1.5)
+use_as_traction = true
+wheel_radius = 0.45
+
+[node name="ChaseCamera3D" type="Camera3D" parent="PlayerVehicle3D"]
+transform = Transform3D(1, 0, 0, 0, 0.94, 0.34, 0, -0.34, 0.94, 0, 4.0, -8.0)
+current = true
+
+[node name="TouchHUD" type="CanvasLayer" parent="."]
+
+[node name="SpeedLabel" type="Label" parent="TouchHUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 340.0
+offset_bottom = 60.0
+text = "0 km/h | GM-01"
