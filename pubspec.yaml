@@ -1,0 +1,27 @@
+name: bharat_mega_city_cargo_3d__577_ultra
+description: "Bharat Mega City Cargo 3D: 577 Ultra - Built by Sarfealam 16-Dept Flutter Factory"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  google_fonts: ^6.2.1
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon.svg
+    - assets/
