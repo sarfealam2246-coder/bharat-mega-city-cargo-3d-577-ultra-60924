@@ -1,0 +1,43 @@
+name: Build Native Godot 4 3D Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  export-android:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Fetch Open-Source CC0 3D Models & PBR Asphalt/Sky Textures
+        run: |
+          mkdir -p assets/models assets/textures build/android
+          curl -fsL "https://raw.githubusercontent.com/sarfealam2246-coder/3d-assets/main/models/vehicle.glb" -o assets/models/vehicle.glb || true
+          curl -fsL "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_02/asphalt_02_diff_1k.jpg" -o assets/textures/asphalt_diff.jpg || true
+          curl -fsL "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr" -o assets/textures/sky_1k.hdr || true
+
+      - name: Setup Android Debug Keystore & Godot Cache
+        run: |
+          mkdir -p /root/.local/share/godot/export_templates/4.3.stable || true
+          godot --headless --quit --editor || true
+
+      - name: Export Native Godot 4 3D Release APK
+        run: |
+          godot --headless --export-release "Android" build/android/game-release.apk
+
+      - name: Publish Godot 4 3D APK to Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-${{ github.run_number }}
+          name: "Godot 4 3D Android APK v1.0.0"
+          files: build/android/*.apk
+          draft: false
+          prerelease: false
